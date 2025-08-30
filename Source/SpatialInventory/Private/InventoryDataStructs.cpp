@@ -2,12 +2,3 @@
 
 
 #include "InventoryDataStructs.h"
-
-
-InventoryDataStructs::InventoryDataStructs()
-{
-}
-
-InventoryDataStructs::~InventoryDataStructs()
-{
-}

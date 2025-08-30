@@ -16,6 +16,13 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
+public:
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
+	int32 Columns;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
+	int32 Rows;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
