@@ -15,20 +15,20 @@ class SPATIALINVENTORY_API UInventoryComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+							   FActorComponentTickFunction* ThisTickFunction) override;
 
-public:
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
 	int32 Columns;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
 	int32 Rows;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
+	float TileSize;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
 };

@@ -21,7 +21,6 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
