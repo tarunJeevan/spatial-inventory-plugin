@@ -33,27 +33,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="UI|InventoryGrid")
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 
-	// Local variables
-	int32 Rows;
-	int32 Columns;
-	float TileSize;
-
-	TArray<float> StartX;
-	TArray<float> EndX;
-	TArray<float> StartY;
-	TArray<float> EndY;
-
-	FLines* LinesData = nullptr; // TODO: Try changing FLines to simple (X,Y) and create array of Flines
+	TArray<FLine> Lines;
 
 private:
-	void CreateLineSegments();
+	void CreateLineSegments(int32 Rows, int32 Columns, float TileSize);
 
 protected:
 	// Native function overrides
 	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
 	virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
 		const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId,
 		const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
-
 };

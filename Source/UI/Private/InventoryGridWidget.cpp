@@ -22,27 +22,15 @@ void UInventoryGridWidget::NativeConstruct()
 	}
 
 	// Set grid parameters
-	Rows = InventoryComponent->Rows;
-	Columns = InventoryComponent->Columns;
-	TileSize = InventoryComponent->TileSize;
-	
-	const float NewWidth = Columns * TileSize;
-	const float NewHeight = Rows * TileSize;
-	LinesData = new FLines();
+	const float NewWidth = InventoryComponent->Columns * InventoryComponent->TileSize;
+	const float NewHeight = InventoryComponent->Rows * InventoryComponent->TileSize;
 
 	// Set grid size
 	UCanvasPanelSlot* BorderAsCanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(GridBorder);
 	BorderAsCanvasSlot->SetSize(FVector2D(NewWidth, NewHeight));
 
 	// Draw grid lines
-	CreateLineSegments();
-}
-
-void UInventoryGridWidget::NativeDestruct()
-{
-	delete LinesData;
-	LinesData = nullptr;
-	Super::NativeDestruct();
+	CreateLineSegments(InventoryComponent->Rows, InventoryComponent->Columns, InventoryComponent->TileSize);
 }
 
 int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
@@ -51,21 +39,18 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 {
 	Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
 
+	// Create the necessary parameters
 	FPaintContext PaintContext(AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
 	constexpr FLinearColor CustomColor(0.5f, 0.5f, 0.5f, 0.5f);
 	const FVector2D TopLeftCorner = GridBorder->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0.f, 0.f));
 
-	// Draw grid lines. TODO: Try modifying to fit Reid's version
-	int32 k = 0;
-	for (int32 i = 0; i < LinesData->XLines.Num(); i++)
+	// Draw lines
+	for (const FLine Line: Lines)
 	{
-		for (int32 j = 0; j < LinesData->YLines.Num(); j++)
-		{
-			k = i;
-		}
-		const FVector2D PositionA = FVector2D(StartX[i], StartY[k]) + TopLeftCorner;
-		const FVector2D PositionB = FVector2D(EndX[i], EndY[k]) + TopLeftCorner;
-		UWidgetBlueprintLibrary::DrawLine(PaintContext, PositionA, PositionB, CustomColor);
+		
+		const FVector2D PositionA = Line.Start + TopLeftCorner;
+		const FVector2D PositionB = Line.End + TopLeftCorner;
+		UWidgetBlueprintLibrary::DrawLine(PaintContext, PositionA, PositionB, CustomColor); 
 	}
 
 	// TODO: Second part
@@ -73,33 +58,19 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 	return int32();
 }
 
-void UInventoryGridWidget::CreateLineSegments()
+void UInventoryGridWidget::CreateLineSegments(const int32 Rows, const int32 Columns, const float TileSize)
 {
 	// Compute coordinates for vertical lines
 	for (int32 i = 0; i <= Columns; i++)
 	{
-		float X = i * TileSize;
-		LinesData->XLines.Add(FVector2D(X, X));
-		LinesData->YLines.Add(FVector2D(0.f, Rows * TileSize));
+		const float X = i * TileSize;
+		Lines.Add(FLine(FVector2D(X, 0.f), FVector2D(X, Rows * TileSize)));
 	}
 
 	// Compute coordinates for horizontal lines
 	for (int32 i = 0; i <= Rows; i++)
 	{
-		float Y = i * TileSize;
-		LinesData->XLines.Add(FVector2D(0.f, Columns * TileSize));
-		LinesData->YLines.Add(FVector2D(Y, Y));
-	}
-
-	// Populate Start and End arrays
-	for (const FVector2D Line : LinesData->XLines)
-	{
-		StartX.Add(Line.X);
-		EndX.Add(Line.Y);
-	}
-	for (const FVector2D Line : LinesData->YLines)
-	{
-		StartY.Add(Line.X);
-		EndY.Add(Line.Y);
+		const float Y = i * TileSize;
+		Lines.Add(FLine(FVector2D(0.f, Y), FVector2D(Columns * TileSize, Y)));
 	}
 }

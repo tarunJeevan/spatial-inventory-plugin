@@ -6,14 +6,26 @@
 #include "InventoryDataStructs.generated.h"
 
 USTRUCT(BlueprintType)
-struct FLines
+struct FLine
 {
 	GENERATED_BODY()
 
-	FLines() {};
+	FLine() {};
+	FLine(const FVector2D Start, const FVector2D End): Start(Start), End(End) {};
 
-	TArray<FVector2D> XLines;
-	TArray<FVector2D> YLines;
+	FVector2D Start;
+	FVector2D End;
+};
+
+USTRUCT(BlueprintType)
+struct FTile
+{
+	GENERATED_BODY()
+
+	FTile() {};
+
+	int32 X;
+	int32 Y;
 };
 
 class SPATIALINVENTORY_API InventoryDataStructs
