@@ -24,6 +24,11 @@
 			"Name": "UI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Item",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	]
 }
