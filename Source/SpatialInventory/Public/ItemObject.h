@@ -6,7 +6,9 @@
 #include "UObject/Object.h"
 #include "ItemObject.generated.h"
 
-UCLASS()
+class AItemActor;
+
+UCLASS(BlueprintType, Blueprintable)
 class SPATIALINVENTORY_API UItemObject : public UObject
 {
 	GENERATED_BODY()
@@ -14,6 +16,17 @@ class SPATIALINVENTORY_API UItemObject : public UObject
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="Item")
 	FIntPoint Dimensions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="Item")
+	TObjectPtr<UMaterialInterface> Icon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="Item")
+	TObjectPtr<UMaterialInterface> IconRotated = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="Item")
+	TSubclassOf<AItemActor> ItemClass = nullptr;
+
+	bool bIsRotated;
 
 public:
 	FIntPoint GetDimensions() const { return Dimensions; }
