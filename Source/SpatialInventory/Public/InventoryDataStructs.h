@@ -11,7 +11,7 @@ struct FLine
 	GENERATED_BODY()
 
 	FLine() {};
-	FLine(const FVector2D Start, const FVector2D End): Start(Start), End(End) {};
+	FLine(const FVector2D InStart, const FVector2D InEnd): Start(InStart), End(InEnd) {};
 
 	FVector2D Start;
 	FVector2D End;
@@ -23,6 +23,7 @@ struct FTile
 	GENERATED_BODY()
 
 	FTile() {};
+	FTile(const int32 InX, const int32 InY): X(InX), Y(InY) {};
 
 	int32 X;
 	int32 Y;
@@ -30,6 +31,5 @@ struct FTile
 
 class SPATIALINVENTORY_API InventoryDataStructs
 {
-public:
 	// 
 };

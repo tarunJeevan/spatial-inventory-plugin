@@ -1,35 +1,135 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "InventoryComponent.h"
-
+#include "InventoryDataStructs.h"
+#include "ItemObject.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
 }
-
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	// Initialize inventory array size based on rows and columns
+	Items.SetNum(Rows * Columns);
 }
 
+bool UInventoryComponent::IsRoomAvailable(const UItemObject* ItemObject, const int32 TopLeftIndex) const
+{
+	const FTile Tile = IndexToTile(TopLeftIndex);
+	const FIntPoint Dimensions = ItemObject->GetDimensions();
+
+	// Check if item fits within inventory bounds
+	for (int32 i = Tile.X; i <= Tile.X + Dimensions.X - 1; i++)
+	{
+		for (int32 j = Tile.Y; j <= Tile.Y + Dimensions.Y - 1; j++)
+		{
+			// Check if the tile is valid. If not, return false
+			if (IsTileValid(FTile(i, j)))
+			{
+				// If tile is already occupied by another item, return false
+				if (const UItemObject* ItemAtIndex = GetItemAtIndex(TileToIndex(FTile(i, j))))
+				{
+					// If the index is invalid, return false
+					if (ItemAtIndex == nullptr)
+					{
+						return false;
+					}
+					// If there is a valid item in the slot, return false
+					if (IsValid(ItemAtIndex))
+					{
+						return false;
+					}
+				} 
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	// If all checks passed, return true
+	return true;
+}
+
+UItemObject* UInventoryComponent::GetItemAtIndex(const int32 Index) const
+{
+	if (Items.IsValidIndex(Index))
+	{
+		return Items[Index]; 
+	}
+	return nullptr;
+}
+
+void UInventoryComponent::AddItemAt(UItemObject* ItemObject, const int32 TopLeftIndex)
+{
+	const FTile Tile = IndexToTile(TopLeftIndex);
+	const FIntPoint Dimensions = ItemObject->GetDimensions();
+
+	// Check if item fits within inventory bounds
+	for (int32 i = Tile.X; i <= Tile.X + Dimensions.X - 1; i++)
+	{
+		for (int32 j = Tile.Y; j <= Tile.Y + Dimensions.Y - 1; j++)
+		{
+			Items[TileToIndex(FTile(i, j))] = ItemObject;
+		}
+	}
+	// Set flag to update inventory state
+	bIsDirty = true;
+}
+
+bool UInventoryComponent::IsTileValid(const FTile Tile) const
+{
+	if (Tile.X >= 0 && Tile.Y >= 0 && Tile.X < Columns && Tile.Y < Rows)
+	{
+		return true;
+	}
+	return false;
+}
+
+FTile UInventoryComponent::IndexToTile(const int32 Index) const
+{
+	return FTile(Index % Columns, Index / Columns);
+}
+
+int32 UInventoryComponent::TileToIndex(const FTile Tile) const
+{
+	return Tile.X + Tile.Y * Columns;
+}
 
 // Called every frame
-void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                        FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+// void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+//                                         FActorComponentTickFunction* ThisTickFunction)
+// {
+// 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+//
+// 	// ...
+// }
 
-	// ...
+bool UInventoryComponent::TryAddItem(UItemObject* ItemObject)
+{
+	if (IsValid(ItemObject))
+	{
+		for (int32 i = 0; i < Items.Num(); i++)
+		{
+			// Check for available room in inventory and add item if found
+			if (IsRoomAvailable(ItemObject, i))
+			{
+				AddItemAt(ItemObject, i);
+				return true;
+			}
+		}
+		// If no room is found, return false
+		return false;
+	}
+	// If ItemObject is invalid, return false
+	return false;
 }
 

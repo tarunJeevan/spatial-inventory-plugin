@@ -11,7 +11,7 @@ class UStaticMeshComponent;
 class USphereComponent;
 
 UCLASS()
-class ITEM_API AItemActor : public AActor
+class SPATIALINVENTORY_API AItemActor : public AActor
 {
 	GENERATED_BODY()
 
@@ -19,17 +19,9 @@ public:
 	// Sets default values for this actor's properties
 	AItemActor();
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	// virtual void Tick(float DeltaTime) override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Create default item object (Override in Blueprint)
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta=(DisplayName="Create Default Item Object", ReturnDisplayName="Item Object"))
-	UItemObject* CreateDefaultItemObject();
-	virtual UItemObject* CreateDefaultItemObject_Implementation();
-
 	// Item properties
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UStaticMeshComponent> StaticMesh = nullptr;
@@ -39,4 +31,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="Item")
 	TObjectPtr<UItemObject> ItemObject = nullptr;
+
+	// Native function overrides
+	virtual void BeginPlay() override;
+
+	// On sphere collision overlap handler
+	UFUNCTION()
+	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                     const FHitResult& SweepResult);
+	
+	// Create default item object (Override in Blueprint)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta=(DisplayName="Create Default Item Object", ReturnDisplayName="Item Object"))
+	UItemObject* CreateDefaultItemObject();
+	virtual UItemObject* CreateDefaultItemObject_Implementation();
 };

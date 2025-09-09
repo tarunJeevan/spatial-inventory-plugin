@@ -1,8 +1,8 @@
 ﻿using UnrealBuildTool;
 
-public class Item : ModuleRules
+public class Interfaces : ModuleRules
 {
-    public Item(ReadOnlyTargetRules Target) : base(Target)
+    public Interfaces(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -19,8 +19,7 @@ public class Item : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore", 
-                "Interfaces", 
+                "SlateCore"
             }
         );
     }

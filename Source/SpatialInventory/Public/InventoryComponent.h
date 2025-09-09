@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
+class UItemObject;
+struct FTile;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SPATIALINVENTORY_API UInventoryComponent : public UActorComponent
@@ -16,19 +18,36 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-							   FActorComponentTickFunction* ThisTickFunction) override;
+	// virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	// 						   FActorComponentTickFunction* ThisTickFunction) override;
+
+	// Try to add item to inventory, returns true if successful
+	bool TryAddItem(UItemObject* ItemObject);
+
+	// Variables
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
+	int32 Columns = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
-	int32 Columns;
+	int32 Rows = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
-	int32 Rows;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
-	float TileSize;
+	float TileSize = 25.f;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Inventory")
+	TArray<UItemObject*> Items;
+
+	bool bIsDirty;
+
+private:
+	bool IsRoomAvailable(const UItemObject* ItemObject, const int32 TopLeftIndex) const;
+	UItemObject* GetItemAtIndex(const int32 Index) const;
+	void AddItemAt(UItemObject* ItemObject, const int32 TopLeftIndex);
+	bool IsTileValid(const FTile Tile) const;
+	FTile IndexToTile(const int32 Index) const;
+	int32 TileToIndex(const FTile Tile) const;
 };
