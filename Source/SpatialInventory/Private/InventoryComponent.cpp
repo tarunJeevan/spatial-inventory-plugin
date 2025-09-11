@@ -9,7 +9,7 @@ UInventoryComponent::UInventoryComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 // Called when the game starts
@@ -105,13 +105,17 @@ int32 UInventoryComponent::TileToIndex(const FTile Tile) const
 }
 
 // Called every frame
-// void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-//                                         FActorComponentTickFunction* ThisTickFunction)
-// {
-// 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-//
-// 	// ...
-// }
+void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                        FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bIsDirty)
+	{
+		bIsDirty = false;
+		OnInventoryChanged.Broadcast();
+	}
+}
 
 bool UInventoryComponent::TryAddItem(UItemObject* ItemObject)
 {
@@ -131,5 +135,30 @@ bool UInventoryComponent::TryAddItem(UItemObject* ItemObject)
 	}
 	// If ItemObject is invalid, return false
 	return false;
+}
+
+TMap<UItemObject*, FTile> UInventoryComponent::GetAllItems() const
+{
+	// Initialize map to be returned
+	TMap<UItemObject*, FTile> AllItems;
+
+	// Iterate through inventory array
+	for (int32 i = 0; i < Items.Num(); i++)
+	{
+		// If item is valid and not already in map, add it with its top-left tile position
+		if (IsValid(Items[i]))
+		{
+			if (!AllItems.Contains(Items[i]))
+			{
+				AllItems.Add(Items[i], IndexToTile(i));
+			}
+		}
+	}
+	return AllItems;
+}
+
+void UInventoryComponent::RemoveItem(UItemObject* ItemObject)
+{
+	// TODO: Implement item removal logic
 }
 

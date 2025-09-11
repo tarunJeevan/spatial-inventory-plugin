@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "InventoryDataStructs.h"
+#include "ItemWidget.h"
 #include "InventoryGridWidget.generated.h"
 
 class UBackgroundBlur;
@@ -34,13 +35,20 @@ protected:
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 
 	TArray<FLine> Lines;
+	int32 Rows;
+	int32 Columns;
+	float TileSize;
 
 private:
-	void CreateLineSegments(int32 Rows, int32 Columns, float TileSize);
+	void CreateLineSegments();
+	UFUNCTION()
+	void OnItemRemoved(UItemObject* ItemObject);
+	UFUNCTION()
+	void Refresh();
 
 protected:
 	// Native function overrides
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 	virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
 		const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId,
 		const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;

@@ -30,4 +30,5 @@ protected:
 
 public:
 	FIntPoint GetDimensions() const { return Dimensions; }
+	TObjectPtr<UMaterialInterface> GetIcon() const { return bIsRotated ? IconRotated : Icon; }
 };

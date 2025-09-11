@@ -9,6 +9,8 @@
 class UItemObject;
 struct FTile;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryChanged);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SPATIALINVENTORY_API UInventoryComponent : public UActorComponent
 {
@@ -18,11 +20,15 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 	// Called every frame
-	// virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	// 						   FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+							   FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Try to add item to inventory, returns true if successful
 	bool TryAddItem(UItemObject* ItemObject);
+	// Get all unique items in inventory with their top-left tile positions
+	TMap<UItemObject*, FTile> GetAllItems() const;
+	// Remove item from inventory
+	void RemoveItem(UItemObject* ItemObject);
 
 	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
@@ -33,6 +39,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
 	float TileSize = 25.f;
+
+	UPROPERTY(BlueprintAssignable, Category="Inventory|Events")
+	FOnInventoryChanged OnInventoryChanged;
 
 protected:
 	// Called when the game starts

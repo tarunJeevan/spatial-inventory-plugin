@@ -1,15 +1,19 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InventoryGridWidget.h"
+
+#include "CustomPlayerController.h"
+#include "ItemWidget.h"
 #include "SpatialInventory/Public/InventoryComponent.h"
 #include "Components/Border.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 
-void UInventoryGridWidget::NativeConstruct()
+void UInventoryGridWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	// Get InventoryComponent from owning player
 	if (const APawn* Pawn = GetOwningPlayerPawn())
@@ -21,6 +25,11 @@ void UInventoryGridWidget::NativeConstruct()
 		UE_LOG(LogTemp, Error, TEXT("InventoryComponent not found in owning PlayerPawn."));
 	}
 
+	// Set rows, columns, and tile size
+	Rows = InventoryComponent->Rows;
+	Columns = InventoryComponent->Columns;
+	TileSize = InventoryComponent->TileSize;
+
 	// Set grid parameters
 	const float NewWidth = InventoryComponent->Columns * InventoryComponent->TileSize;
 	const float NewHeight = InventoryComponent->Rows * InventoryComponent->TileSize;
@@ -30,7 +39,13 @@ void UInventoryGridWidget::NativeConstruct()
 	BorderAsCanvasSlot->SetSize(FVector2D(NewWidth, NewHeight));
 
 	// Draw grid lines
-	CreateLineSegments(InventoryComponent->Rows, InventoryComponent->Columns, InventoryComponent->TileSize);
+	CreateLineSegments();
+
+	// Refresh inventory grid
+	Refresh();
+
+	// Bind to OnInventoryChanged delegate
+	InventoryComponent->OnInventoryChanged.AddDynamic(this, &UInventoryGridWidget::Refresh);
 }
 
 int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
@@ -58,7 +73,7 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 	return int32();
 }
 
-void UInventoryGridWidget::CreateLineSegments(const int32 Rows, const int32 Columns, const float TileSize)
+void UInventoryGridWidget::CreateLineSegments()
 {
 	// Compute coordinates for vertical lines
 	for (int32 i = 0; i <= Columns; i++)
@@ -72,5 +87,39 @@ void UInventoryGridWidget::CreateLineSegments(const int32 Rows, const int32 Colu
 	{
 		const float Y = i * TileSize;
 		Lines.Add(FLine(FVector2D(0.f, Y), FVector2D(Columns * TileSize, Y)));
+	}
+}
+
+void UInventoryGridWidget::OnItemRemoved(UItemObject* ItemObject)
+{
+	// Remove item from inventory component
+	InventoryComponent->RemoveItem(ItemObject);
+}
+
+void UInventoryGridWidget::Refresh()
+{
+	GridCanvasPanel->ClearChildren();
+	
+	// Loop through inventory and create an item widget for every unique item
+	for (const TPair<UItemObject*, FTile>& Pair: InventoryComponent->GetAllItems())
+	{
+		const TSubclassOf<UUserWidget> ItemWidgetClass = Cast<ACustomPlayerController>(GetOwningPlayer())->ItemWidgetClass;
+		const FName ItemWidgetName = FName(*FString::Printf(TEXT("ItemWidget_%p"), Pair.Key));
+
+		// Create and configure item widget
+		if (UItemWidget* ItemWidget = CreateWidget<UItemWidget>(GetWorld(), ItemWidgetClass, ItemWidgetName))
+		{
+			ItemWidget->SetOwningPlayer(GetOwningPlayer());
+			ItemWidget->TileSize = TileSize;
+			ItemWidget->ItemObject = Pair.Key;
+			ItemWidget->Refresh();
+			// Bind to OnRemoved delegate
+			ItemWidget->OnRemoved.AddDynamic(this, &UInventoryGridWidget::OnItemRemoved);
+			// Add item widget to grid canvas panel
+			UCanvasPanelSlot* ItemWidgetPanelSlot = Cast<UCanvasPanelSlot>(GridCanvasPanel->AddChild(ItemWidget));
+			// Set item widget size and position
+			ItemWidgetPanelSlot->SetAutoSize(true);
+			ItemWidgetPanelSlot->SetPosition(FVector2D(Pair.Value.X * TileSize, Pair.Value.Y * TileSize));
+		}
 	}
 }
