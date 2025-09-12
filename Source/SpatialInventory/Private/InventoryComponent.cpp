@@ -157,8 +157,19 @@ TMap<UItemObject*, FTile> UInventoryComponent::GetAllItems() const
 	return AllItems;
 }
 
-void UInventoryComponent::RemoveItem(UItemObject* ItemObject)
+void UInventoryComponent::RemoveItem(const UItemObject* ItemObject)
 {
-	// TODO: Implement item removal logic
+	if (IsValid(ItemObject))
+	{
+		for (UItemObject*& Item: Items)
+		{
+			// Remove all instances of the item from the inventory
+			if (Item == ItemObject)
+			{
+				Item = nullptr;
+				bIsDirty = true;
+			}
+		}
+	}
 }
 

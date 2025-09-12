@@ -28,7 +28,7 @@ public:
 	// Get all unique items in inventory with their top-left tile positions
 	TMap<UItemObject*, FTile> GetAllItems() const;
 	// Remove item from inventory
-	void RemoveItem(UItemObject* ItemObject);
+	void RemoveItem(const UItemObject* ItemObject);
 
 	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
