@@ -8,6 +8,12 @@
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 
+void UItemWidget::Init(const float InTileSize, UItemObject* InItemObject)
+{
+	TileSize = InTileSize;
+	ItemObject = InItemObject;
+}
+
 void UItemWidget::Refresh()
 {
 	const FIntPoint Dimensions = ItemObject->GetDimensions();

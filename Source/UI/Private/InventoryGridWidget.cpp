@@ -110,8 +110,7 @@ void UInventoryGridWidget::Refresh()
 		if (UItemWidget* ItemWidget = CreateWidget<UItemWidget>(GetWorld(), ItemWidgetClass, ItemWidgetName))
 		{
 			ItemWidget->SetOwningPlayer(GetOwningPlayer());
-			ItemWidget->TileSize = TileSize;
-			ItemWidget->ItemObject = Pair.Key;
+			ItemWidget->Init(TileSize, Pair.Key);
 			ItemWidget->Refresh();
 			// Bind to OnRemoved delegate
 			ItemWidget->OnRemoved.AddDynamic(this, &UInventoryGridWidget::OnItemRemoved);

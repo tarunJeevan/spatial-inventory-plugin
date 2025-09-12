@@ -19,7 +19,7 @@ class UI_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
 	TObjectPtr<UCanvasPanel> CanvasPanel;
 

@@ -25,7 +25,7 @@ class UI_API UItemWidget : public UUserWidget
 	// Properties
 	FVector2D Size;
 	
-public:
+protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
 	TObjectPtr<UCanvasPanel> CanvasPanel;
 
@@ -44,9 +44,13 @@ public:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="ItemWidget|Private")
 	TObjectPtr<UItemObject> ItemObject;
 
+public:
 	// Delegate called when item is removed
 	UPROPERTY(BlueprintAssignable, Category="ItemWidget|Delegates")
 	FOnRemoved OnRemoved;
+
+	// Initialize item widget
+	void Init(const float InTileSize, UItemObject* InItemObject);
 
 	// Refresh item widget
 	UFUNCTION()
