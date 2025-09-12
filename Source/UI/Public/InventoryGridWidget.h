@@ -41,10 +41,15 @@ protected:
 
 private:
 	void CreateLineSegments();
+
 	UFUNCTION()
 	void OnItemRemoved(UItemObject* ItemObject);
+
 	UFUNCTION()
 	void Refresh();
+
+	UFUNCTION()
+	FEventReply CustomOnMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
 
 protected:
 	// Native function overrides

@@ -31,4 +31,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
 	TObjectPtr<UInventoryGridWidget> InventoryGrid;
+
+	virtual void NativeOnInitialized() override;
+
+private:
+	UFUNCTION()
+	FEventReply CustomOnMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
 };

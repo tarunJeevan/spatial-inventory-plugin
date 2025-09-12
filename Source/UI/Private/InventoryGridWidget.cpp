@@ -15,6 +15,9 @@ void UInventoryGridWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
+	// Bind custom mouse down event to grid border to block mouse events from passing through
+	GridBorder->OnMouseButtonDownEvent.BindUFunction(this, "CustomOnMouseButtonDown");
+
 	// Get InventoryComponent from owning player
 	if (const APawn* Pawn = GetOwningPlayerPawn())
 	{
@@ -121,4 +124,9 @@ void UInventoryGridWidget::Refresh()
 			ItemWidgetPanelSlot->SetPosition(FVector2D(Pair.Value.X * TileSize, Pair.Value.Y * TileSize));
 		}
 	}
+}
+
+FEventReply UInventoryGridWidget::CustomOnMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
+{
+	return FEventReply(true);
 }
