@@ -30,11 +30,10 @@ AItemActor::AItemActor()
 	SphereCollision->SetupAttachment(StaticMesh);
 }
 
-// Called every frame
-// void AItemActor::Tick(float DeltaTime)
-// {
-// 	Super::Tick(DeltaTime);
-// }
+void AItemActor::SetItemObject(UItemObject* NewItemObject)
+{
+	ItemObject = NewItemObject;
+}
 
 // Called when the game starts or when spawned
 void AItemActor::BeginPlay()

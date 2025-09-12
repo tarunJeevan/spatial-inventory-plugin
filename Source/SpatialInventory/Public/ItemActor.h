@@ -18,8 +18,7 @@ class SPATIALINVENTORY_API AItemActor : public AActor
 public:
 	// Sets default values for this actor's properties
 	AItemActor();
-	// Called every frame
-	// virtual void Tick(float DeltaTime) override;
+	void SetItemObject(UItemObject* NewItemObject);
 
 protected:
 	// Item properties

@@ -21,6 +21,9 @@ class UI_API UInventoryGridWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
 protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI|GridWidgets")
 	TObjectPtr<UCanvasPanel> CanvasPanel;

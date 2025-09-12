@@ -32,7 +32,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
 	TObjectPtr<UInventoryGridWidget> InventoryGrid;
 
+	// Native function overrides
 	virtual void NativeOnInitialized() override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+		UDragDropOperation* InOperation) override;
 
 private:
 	UFUNCTION()

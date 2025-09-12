@@ -21,6 +21,7 @@ public class UI : ModuleRules
                 "Slate",
                 "SlateCore",
                 "UMG",
+                "InputCore",
                 "SpatialInventory", 
                 "PluginTestBed"
             }
