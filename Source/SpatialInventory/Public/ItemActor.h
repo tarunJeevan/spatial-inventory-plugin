@@ -18,10 +18,15 @@ class SPATIALINVENTORY_API AItemActor : public AActor
 public:
 	// Sets default values for this actor's properties
 	AItemActor();
+
+	/**
+	 * @brief Sets the ItemObject property of this Actor
+	 * 
+	 * @param NewItemObject ItemObject to be set as this Actor's ItemObject
+	 */
 	void SetItemObject(UItemObject* NewItemObject);
 
 protected:
-	// Item properties
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<UStaticMeshComponent> StaticMesh = nullptr;
 
@@ -31,15 +36,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="Item")
 	TObjectPtr<UItemObject> ItemObject = nullptr;
 
-	// Native function overrides
-	virtual void BeginPlay() override;
-
 	// On sphere collision overlap handler
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-	                     const FHitResult& SweepResult);
+						 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+						 const FHitResult& SweepResult);
 	
+	// Native function overrides
+	virtual void BeginPlay() override;
+
 	// Create default item object (Override in Blueprint)
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta=(DisplayName="Create Default Item Object", ReturnDisplayName="Item Object"))
 	UItemObject* CreateDefaultItemObject();

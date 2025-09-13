@@ -10,6 +10,7 @@
 #include "Components/SizeBox.h"
 #include "ItemObject.h"
 
+#pragma region Public
 void UItemWidget::Init(const float InTileSize, UItemObject* InItemObject)
 {
 	TileSize = InTileSize;
@@ -36,7 +37,9 @@ void UItemWidget::Refresh()
 		ItemImage->SetBrush(IconBrush);
 	}
 }
+#pragma endregion
 
+#pragma region NativeOverrides
 void UItemWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
@@ -81,3 +84,4 @@ void UItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoint
 	// Set output operation
 	OutOperation = Operation;
 }
+#pragma endregion

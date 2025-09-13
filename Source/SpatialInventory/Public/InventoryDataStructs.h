@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "InventoryDataStructs.generated.h"
 
+/**
+ * @brief A struct to hold the start and end coordinates of a line to draw inventory grid lines
+ */
 USTRUCT(BlueprintType)
 struct FLine
 {
@@ -17,6 +20,9 @@ struct FLine
 	FVector2D End;
 };
 
+/**
+ * @brief Location of an item in the 2D inventory grid
+ */
 USTRUCT(BlueprintType)
 struct FTile
 {
@@ -27,9 +33,4 @@ struct FTile
 
 	int32 X;
 	int32 Y;
-};
-
-class SPATIALINVENTORY_API InventoryDataStructs
-{
-	// 
 };

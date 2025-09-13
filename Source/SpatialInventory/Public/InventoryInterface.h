@@ -13,16 +13,16 @@ class UInventoryInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class SPATIALINVENTORY_API IInventoryInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	// Return the Inventory Component owned by this actor
+	/**
+	 * 
+	 * @return Inventory Component owned by this actor
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory")
 	class UInventoryComponent* GetInventoryComponent();
 };

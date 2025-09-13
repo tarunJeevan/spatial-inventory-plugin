@@ -10,6 +10,7 @@
 #include "ItemObject.h"
 #include "Blueprint/DragDropOperation.h"
 
+#pragma region NativeOverrides
 void UInventoryWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -26,8 +27,12 @@ bool UInventoryWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 	// Spawn payload into the world
 	UInventoryUtils::SpawnItemFromActor(Cast<UItemObject>(InOperation->Payload), InventoryGrid->GetInventoryComponent()->GetOwner(), true);
 
+	// Set focus on game viewport to enable gameplay input
+	FSlateApplication::Get().SetAllUserFocusToGameViewport();
+
 	return true;
 }
+#pragma endregion 
 
 FEventReply UInventoryWidget::CustomOnMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {

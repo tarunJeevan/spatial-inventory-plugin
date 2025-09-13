@@ -14,15 +14,12 @@ class USizeBox;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoved, UItemObject*, ItemObject);
 
-/**
- * 
- */
 UCLASS()
 class UI_API UItemWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-	// Properties
+	/** The size of the item widget based on the item's dimensions */
 	FVector2D Size;
 	
 protected:
@@ -38,29 +35,44 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
 	TObjectPtr<UImage> ItemImage;
 
+	/** Tile size set in the inventory component */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="ItemWidget|Private")
 	float TileSize;
 
+	/** ItemObject representing the item that was added to the inventory */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="ItemWidget|Private")
 	TObjectPtr<UItemObject> ItemObject;
 
 public:
-	// Delegate called when item is removed
+	/** Delegate to be broadcast when the item is dropped */
 	UPROPERTY(BlueprintAssignable, Category="ItemWidget|Delegates")
 	FOnRemoved OnRemoved;
 
-	// Initialize item widget
+	/**
+	 * @brief Initialize a newly constructed instance with the necessary data
+	 * 
+	 * @param InTileSize Tile size set in the inventory component
+	 * @param InItemObject ItemObject representing the item that was picked up
+	 */
 	void Init(const float InTileSize, UItemObject* InItemObject);
 
-	// Refresh item widget
+	/**
+	 * @brief Refresh the item widget's UI based on the ItemObject
+	 */
 	UFUNCTION()
 	void Refresh();
 
 protected:
-	// Native function overrides
+	// Override function to draw a highlight color when mouse is hovering over the item widget
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	// Override function to draw normal color when mouse stops hovering over the item widget
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+
+	// Override function to start a drag and drop operation
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	// Override function to handle drag and drop operation
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
 	                                  UDragDropOperation*& OutOperation) override;
 };

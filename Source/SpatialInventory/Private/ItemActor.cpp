@@ -6,7 +6,7 @@
 #include "ItemObject.h"
 #include "Components/SphereComponent.h"
 
-// Sets default values
+#pragma region Public
 AItemActor::AItemActor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -34,18 +34,7 @@ void AItemActor::SetItemObject(UItemObject* NewItemObject)
 {
 	ItemObject = NewItemObject;
 }
-
-// Called when the game starts or when spawned
-void AItemActor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// Create a default item object if one doesn't already exist.
-	if (!ItemObject)
-	{
-		ItemObject = CreateDefaultItemObject();
-	}
-}
+#pragma endregion
 
 void AItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -67,8 +56,20 @@ void AItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	}
 }
 
+#pragma region NativeOverrides
+void AItemActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Create a default item object if one doesn't already exist.
+	if (!ItemObject)
+	{
+		ItemObject = CreateDefaultItemObject();
+	}
+}
+
 UItemObject* AItemActor::CreateDefaultItemObject_Implementation()
 {
 	return UItemObject::StaticClass()->GetDefaultObject<UItemObject>();
 }
-
+#pragma endregion 

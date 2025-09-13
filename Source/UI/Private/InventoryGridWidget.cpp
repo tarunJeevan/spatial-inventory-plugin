@@ -14,6 +14,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Slate/SlateBrushAsset.h"
 
+#pragma region NativeOverrides
 void UInventoryGridWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -97,31 +98,7 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 	return int32();
 }
 
-bool UInventoryGridWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
-	UDragDropOperation* InOperation)
-{
-	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
-
-	// If there is room available for payload in inventory, add it at the calculated position
-	if (IsRoomAvailableForPayload(GetPayload(InOperation)))
-	{
-		const FTile Tile = FTile(DraggedItemTopLeftTile.X, DraggedItemTopLeftTile.Y);
-		InventoryComponent->AddItemAt(GetPayload(InOperation), InventoryComponent->TileToIndex(Tile));
-	}
-	else
-	{
-		// Try to move item to any available space in inventory. If no space is available, spawn item into the world.
-		if (!InventoryComponent->TryAddItem(GetPayload(InOperation)))
-		{
-			UInventoryUtils::SpawnItemFromActor(GetPayload(InOperation), InventoryComponent->GetOwner(), true);
-		}
-	}
-	// Set focus on game viewport to enable gameplay input
-	FSlateApplication::Get().SetAllUserFocusToGameViewport();
-	
-	return true;
-}
-
+#pragma region DragNDrop
 void UInventoryGridWidget::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 	UDragDropOperation* InOperation)
 {
@@ -176,6 +153,32 @@ bool UInventoryGridWidget::NativeOnDragOver(const FGeometry& InGeometry, const F
 	return true;
 }
 
+bool UInventoryGridWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+	UDragDropOperation* InOperation)
+{
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+
+	// If there is room available for payload in inventory, add it at the calculated position
+	if (IsRoomAvailableForPayload(GetPayload(InOperation)))
+	{
+		const FTile Tile = FTile(DraggedItemTopLeftTile.X, DraggedItemTopLeftTile.Y);
+		InventoryComponent->AddItemAt(GetPayload(InOperation), InventoryComponent->TileToIndex(Tile));
+	}
+	else
+	{
+		// Try to move item to any available space in inventory. If no space is available, spawn item into the world.
+		if (!InventoryComponent->TryAddItem(GetPayload(InOperation)))
+		{
+			UInventoryUtils::SpawnItemFromActor(GetPayload(InOperation), InventoryComponent->GetOwner(), true);
+		}
+	}
+	// Set focus on game viewport to enable gameplay input
+	FSlateApplication::Get().SetAllUserFocusToGameViewport();
+	
+	return true;
+}
+#pragma endregion
+
 FReply UInventoryGridWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	Super::NativeOnPreviewKeyDown(InGeometry, InKeyEvent);
@@ -193,7 +196,9 @@ FReply UInventoryGridWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry,
 	}
 	return FReply::Handled();
 }
+#pragma endregion
 
+#pragma region Private
 void UInventoryGridWidget::CreateLineSegments()
 {
 	// Compute coordinates for vertical lines
@@ -291,3 +296,4 @@ FEventReply UInventoryGridWidget::CustomOnMouseButtonDown(FGeometry MyGeometry, 
 {
 	return FEventReply(true);
 }
+#pragma endregion

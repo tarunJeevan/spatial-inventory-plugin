@@ -32,12 +32,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
 	TObjectPtr<UInventoryGridWidget> InventoryGrid;
 
-	// Native function overrides
+	// Override function to initialize the widget (Called only once)
 	virtual void NativeOnInitialized() override;
+
+	// Override function to handle drop operations
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 		UDragDropOperation* InOperation) override;
 
 private:
+	// Function to bind to the widget's OnMouseButtonDown event
 	UFUNCTION()
 	FEventReply CustomOnMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
 };
