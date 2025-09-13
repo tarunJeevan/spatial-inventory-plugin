@@ -29,6 +29,9 @@ public:
 	TMap<UItemObject*, FTile> GetAllItems() const;
 	// Remove item from inventory
 	void RemoveItem(const UItemObject* ItemObject);
+	bool IsRoomAvailable(const UItemObject* ItemObject, const int32 TopLeftIndex) const;
+	void AddItemAt(UItemObject* ItemObject, const int32 TopLeftIndex);
+	int32 TileToIndex(const FTile Tile) const;
 
 	// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
@@ -53,10 +56,7 @@ protected:
 	bool bIsDirty;
 
 private:
-	bool IsRoomAvailable(const UItemObject* ItemObject, const int32 TopLeftIndex) const;
 	UItemObject* GetItemAtIndex(const int32 Index) const;
-	void AddItemAt(UItemObject* ItemObject, const int32 TopLeftIndex);
 	bool IsTileValid(const FTile Tile) const;
 	FTile IndexToTile(const int32 Index) const;
-	int32 TileToIndex(const FTile Tile) const;
 };

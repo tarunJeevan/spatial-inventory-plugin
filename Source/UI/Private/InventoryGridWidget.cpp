@@ -3,6 +3,7 @@
 #include "InventoryGridWidget.h"
 
 #include "CustomPlayerController.h"
+#include "ItemObject.h"
 #include "ItemWidget.h"
 #include "SpatialInventory/Public/InventoryComponent.h"
 #include "Components/Border.h"
@@ -76,6 +77,59 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 	return int32();
 }
 
+bool UInventoryGridWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+	UDragDropOperation* InOperation)
+{
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+
+	if (IsRoomAvailableForPayload(GetPayload(InOperation)))
+	{
+		const FTile Tile = FTile(DraggedItemTopLeftTile.X, DraggedItemTopLeftTile.Y);
+		InventoryComponent->AddItemAt(GetPayload(InOperation), InventoryComponent->TileToIndex(Tile));
+	}
+
+	return true;
+}
+
+bool UInventoryGridWidget::NativeOnDragOver(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+	UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragOver(InGeometry, InDragDropEvent, InOperation);
+
+	const FVector2D MousePosition = InGeometry.AbsoluteToLocal(InDragDropEvent.GetScreenSpacePosition());
+	auto [Right, Down] = MousePositionInTile(MousePosition);
+	int32 X, Y;
+
+	// Calculate X based on mouse position in tile
+	if (Right)
+	{
+		const int32 Value = GetPayload(InOperation)->GetDimensions().X - 1;
+		X = FMath::Clamp(Value, 0, Value);
+	}
+	else
+	{
+		const int32 Value = GetPayload(InOperation)->GetDimensions().X - 0;
+		X = FMath::Clamp(Value, 0, Value);
+	}
+
+	// Calculate Y based on mouse position in tile
+	if (Down)
+	{
+		const int32 Value = GetPayload(InOperation)->GetDimensions().Y - 1;
+		Y = FMath::Clamp(Value, 0, Value);
+	}
+	else
+	{
+		const int32 Value = GetPayload(InOperation)->GetDimensions().Y - 0;
+		Y = FMath::Clamp(Value, 0, Value);
+	}
+	const FIntPoint CalcResult = FIntPoint(FMath::TruncToInt32(MousePosition.X / TileSize), FMath::TruncToInt32(MousePosition.Y / TileSize));
+
+	DraggedItemTopLeftTile = FIntPoint(CalcResult - FIntPoint(X, Y) / 2); // TODO: Check if this is correct
+
+	return true;
+}
+
 void UInventoryGridWidget::CreateLineSegments()
 {
 	// Compute coordinates for vertical lines
@@ -91,6 +145,49 @@ void UInventoryGridWidget::CreateLineSegments()
 		const float Y = i * TileSize;
 		Lines.Add(FLine(FVector2D(0.f, Y), FVector2D(Columns * TileSize, Y)));
 	}
+}
+
+UItemObject* UInventoryGridWidget::GetPayload(const UDragDropOperation* DragDropOperation) const
+{
+	if (IsValid(DragDropOperation))
+	{
+		return Cast<UItemObject>(DragDropOperation->Payload);
+	}
+	// Return nullptr if drag and drop operation is invalid
+	return nullptr;
+}
+
+bool UInventoryGridWidget::IsRoomAvailableForPayload(const UItemObject* Payload) const
+{
+	if (IsValid(Payload))
+	{
+		// Return true or false depending on if there is room available for payload in inventory
+		const FTile Tile = FTile(DraggedItemTopLeftTile.X, DraggedItemTopLeftTile.Y);
+		return InventoryComponent->IsRoomAvailable(Payload, InventoryComponent->TileToIndex(Tile));
+	}
+	// Return false if payload is invalid
+	return false;
+}
+
+TTuple<bool, bool> UInventoryGridWidget::MousePositionInTile(const FVector2D MousePosition) const
+{
+	bool Right = false;
+	bool Down = false;
+
+	// Determine if mouse is in right or left half of tile
+	if (FMath::Fmod(MousePosition.X, TileSize) > TileSize / 2.f)
+	{
+		Right = true;
+	}
+
+	// Determine if mouse is in bottom or top half of tile
+	if (FMath::Fmod(MousePosition.Y, TileSize) > TileSize / 2.f)
+	{
+		Down = true;
+	}
+
+	// Return tuple indicating right and down status of mouse position in tile
+	return TTuple<bool, bool>(Right, Down);
 }
 
 void UInventoryGridWidget::OnItemRemoved(UItemObject* ItemObject)
