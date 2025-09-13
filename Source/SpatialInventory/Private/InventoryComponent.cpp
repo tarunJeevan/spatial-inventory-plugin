@@ -121,6 +121,7 @@ bool UInventoryComponent::TryAddItem(UItemObject* ItemObject)
 {
 	if (IsValid(ItemObject))
 	{
+		// Try to add item in every possible position in inventory
 		for (int32 i = 0; i < Items.Num(); i++)
 		{
 			// Check for available room in inventory and add item if found
@@ -130,7 +131,22 @@ bool UInventoryComponent::TryAddItem(UItemObject* ItemObject)
 				return true;
 			}
 		}
-		// If no room is found, return false
+		
+		// Rotate item and try again
+		ItemObject->Rotate();
+		for (int32 i = 0; i < Items.Num(); i++)
+		{
+			// Check for available room in inventory and add item if found
+			if (IsRoomAvailable(ItemObject, i))
+			{
+				AddItemAt(ItemObject, i);
+				return true;
+			}
+		}
+		// Rotate item back to original orientation
+		ItemObject->Rotate();
+		
+		// No room was found so return false
 		return false;
 	}
 	// If ItemObject is invalid, return false

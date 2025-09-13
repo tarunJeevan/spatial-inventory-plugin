@@ -14,6 +14,7 @@ void UItemWidget::Init(const float InTileSize, UItemObject* InItemObject)
 {
 	TileSize = InTileSize;
 	ItemObject = InItemObject;
+	SetIsFocusable(true);
 }
 
 void UItemWidget::Refresh()

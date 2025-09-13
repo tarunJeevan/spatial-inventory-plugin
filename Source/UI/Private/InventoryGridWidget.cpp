@@ -3,6 +3,7 @@
 #include "InventoryGridWidget.h"
 
 #include "CustomPlayerController.h"
+#include "InventoryUtils.h"
 #include "ItemObject.h"
 #include "ItemWidget.h"
 #include "SpatialInventory/Public/InventoryComponent.h"
@@ -11,6 +12,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Slate/SlateBrushAsset.h"
 
 void UInventoryGridWidget::NativeOnInitialized()
 {
@@ -72,7 +74,25 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 		UWidgetBlueprintLibrary::DrawLine(PaintContext, PositionA, PositionB, CustomColor); 
 	}
 
-	// TODO: Second part
+	// Draw item drop location
+	if (UWidgetBlueprintLibrary::IsDragDropping() && bDrawDropLocation)
+	{
+		const UItemObject* Payload = GetPayload(UWidgetBlueprintLibrary::GetDragDroppingContent());
+		// Calculate DrawBox parameters
+		const FVector2D DrawPosition = FVector2D(DraggedItemTopLeftTile.X * TileSize, DraggedItemTopLeftTile.Y * TileSize);
+		const FVector2D DrawSize = FVector2D(Payload->GetDimensions().X * TileSize, Payload->GetDimensions().Y * TileSize);
+		USlateBrushAsset* DefaultBrush = NewObject<USlateBrushAsset>();
+		
+		// Draw drop location in green if there is room available and in red if there is no room available
+		if (IsRoomAvailableForPayload(Payload))
+		{
+			UWidgetBlueprintLibrary::DrawBox(PaintContext, DrawPosition, DrawSize, DefaultBrush, FLinearColor(0.f, 1.f, 0.f, 0.25f));
+		}
+		else
+		{
+			UWidgetBlueprintLibrary::DrawBox(PaintContext, DrawPosition, DrawSize, DefaultBrush, FLinearColor(1.f, 0.f, 0.f, 0.25f));
+		}
+	}
 	
 	return int32();
 }
@@ -82,17 +102,41 @@ bool UInventoryGridWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
+	// If there is room available for payload in inventory, add it at the calculated position
 	if (IsRoomAvailableForPayload(GetPayload(InOperation)))
 	{
 		const FTile Tile = FTile(DraggedItemTopLeftTile.X, DraggedItemTopLeftTile.Y);
 		InventoryComponent->AddItemAt(GetPayload(InOperation), InventoryComponent->TileToIndex(Tile));
 	}
-
+	else
+	{
+		// Try to move item to any available space in inventory. If no space is available, spawn item into the world.
+		if (!InventoryComponent->TryAddItem(GetPayload(InOperation)))
+		{
+			UInventoryUtils::SpawnItemFromActor(GetPayload(InOperation), InventoryComponent->GetOwner(), true);
+		}
+	}
+	
 	return true;
 }
 
-bool UInventoryGridWidget::NativeOnDragOver(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+void UInventoryGridWidget::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 	UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragEnter(InGeometry, InDragDropEvent, InOperation);
+
+	bDrawDropLocation = true;
+}
+
+void UInventoryGridWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
+
+	bDrawDropLocation = false;
+}
+
+bool UInventoryGridWidget::NativeOnDragOver(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+                                            UDragDropOperation* InOperation)
 {
 	Super::NativeOnDragOver(InGeometry, InDragDropEvent, InOperation);
 
@@ -128,6 +172,24 @@ bool UInventoryGridWidget::NativeOnDragOver(const FGeometry& InGeometry, const F
 	DraggedItemTopLeftTile = FIntPoint(CalcResult - FIntPoint(X, Y) / 2); // TODO: Check if this is correct
 
 	return true;
+}
+
+FReply UInventoryGridWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnPreviewKeyDown(InGeometry, InKeyEvent);
+
+	if (InKeyEvent.GetKey() == EKeys::R)
+	{
+		UItemObject* Payload = GetPayload(UWidgetBlueprintLibrary::GetDragDroppingContent());
+		if (IsValid(Payload))
+		{
+			// Rotate item dimensions
+			Payload->Rotate();
+			// Refresh drag visual
+			Cast<UItemWidget>(UWidgetBlueprintLibrary::GetDragDroppingContent()->DefaultDragVisual)->Refresh();
+		}
+	}
+	return FReply::Handled();
 }
 
 void UInventoryGridWidget::CreateLineSegments()

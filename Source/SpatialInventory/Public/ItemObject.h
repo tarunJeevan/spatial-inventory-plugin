@@ -29,7 +29,9 @@ protected:
 	bool bIsRotated;
 
 public:
-	FIntPoint GetDimensions() const { return Dimensions; }
+	FIntPoint GetDimensions() const;
 	TObjectPtr<UMaterialInterface> GetIcon() const { return bIsRotated ? IconRotated : Icon; }
 	TSubclassOf<AItemActor> GetItemClass() const { return ItemClass; }
+	void Rotate() { bIsRotated = !bIsRotated; }
+	bool IsRotated() const { return bIsRotated; }
 };

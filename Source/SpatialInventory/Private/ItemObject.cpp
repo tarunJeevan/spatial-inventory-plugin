@@ -2,3 +2,11 @@
 
 #include "ItemObject.h"
 
+FIntPoint UItemObject::GetDimensions() const
+{
+	if (bIsRotated)
+	{
+		return FIntPoint(Dimensions.Y, Dimensions.X);
+	}
+	return Dimensions;
+}
