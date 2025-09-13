@@ -14,7 +14,6 @@ void UItemWidget::Init(const float InTileSize, UItemObject* InItemObject)
 {
 	TileSize = InTileSize;
 	ItemObject = InItemObject;
-	SetIsFocusable(true);
 }
 
 void UItemWidget::Refresh()
@@ -56,8 +55,6 @@ void UItemWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 
 FReply UItemWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-
 	// Set widget to detect drag if left mouse button is pressed
 	return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
 }

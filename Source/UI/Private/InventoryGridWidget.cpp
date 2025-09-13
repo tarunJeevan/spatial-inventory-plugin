@@ -116,6 +116,8 @@ bool UInventoryGridWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 			UInventoryUtils::SpawnItemFromActor(GetPayload(InOperation), InventoryComponent->GetOwner(), true);
 		}
 	}
+	// Set focus on game viewport to enable gameplay input
+	FSlateApplication::Get().SetAllUserFocusToGameViewport();
 	
 	return true;
 }
@@ -142,34 +144,34 @@ bool UInventoryGridWidget::NativeOnDragOver(const FGeometry& InGeometry, const F
 
 	const FVector2D MousePosition = InGeometry.AbsoluteToLocal(InDragDropEvent.GetScreenSpacePosition());
 	auto [Right, Down] = MousePositionInTile(MousePosition);
-	int32 X, Y;
+	int32 CalcX, CalcY;
 
 	// Calculate X based on mouse position in tile
 	if (Right)
 	{
 		const int32 Value = GetPayload(InOperation)->GetDimensions().X - 1;
-		X = FMath::Clamp(Value, 0, Value);
+		CalcX = FMath::Clamp(Value, 0, Value);
 	}
 	else
 	{
 		const int32 Value = GetPayload(InOperation)->GetDimensions().X - 0;
-		X = FMath::Clamp(Value, 0, Value);
+		CalcX = FMath::Clamp(Value, 0, Value);
 	}
 
 	// Calculate Y based on mouse position in tile
 	if (Down)
 	{
 		const int32 Value = GetPayload(InOperation)->GetDimensions().Y - 1;
-		Y = FMath::Clamp(Value, 0, Value);
+		CalcY = FMath::Clamp(Value, 0, Value);
 	}
 	else
 	{
 		const int32 Value = GetPayload(InOperation)->GetDimensions().Y - 0;
-		Y = FMath::Clamp(Value, 0, Value);
+		CalcY = FMath::Clamp(Value, 0, Value);
 	}
 	const FIntPoint CalcResult = FIntPoint(FMath::TruncToInt32(MousePosition.X / TileSize), FMath::TruncToInt32(MousePosition.Y / TileSize));
 
-	DraggedItemTopLeftTile = FIntPoint(CalcResult - FIntPoint(X, Y) / 2); // TODO: Check if this is correct
+	DraggedItemTopLeftTile = FIntPoint(CalcResult - FIntPoint(CalcX, CalcY) / 2);
 
 	return true;
 }

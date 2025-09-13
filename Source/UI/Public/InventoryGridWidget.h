@@ -37,11 +37,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="UI|InventoryGrid")
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 
+	// Private drawing params
 	TArray<FLine> Lines;
 	int32 Rows;
 	int32 Columns;
 	float TileSize;
-
 	FIntPoint DraggedItemTopLeftTile;
 	bool bDrawDropLocation;
 
