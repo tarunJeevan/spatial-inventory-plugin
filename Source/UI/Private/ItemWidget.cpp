@@ -45,7 +45,7 @@ void UItemWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointer
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
 	// Set item widget background border color to semi-transparent gray
-	BackgroundBorder->SetBrushColor(FLinearColor(0.5f, 0.5f, 0.5f, 0.2f));
+	BackgroundBorder->SetBrushColor(HoverBackgroundColor);
 }
 
 void UItemWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
@@ -53,7 +53,7 @@ void UItemWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	Super::NativeOnMouseLeave(InMouseEvent);
 
 	// Reset item widget background border color to original color
-	BackgroundBorder->SetBrushColor(FLinearColor(0.f, 0.f, 0.f, 0.5f));
+	BackgroundBorder->SetBrushColor(DefaultBackgroundColor);
 }
 
 FReply UItemWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

@@ -19,6 +19,14 @@ class UI_API UInventoryGridWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	/** Item widget background color when drop location is allowed */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="InventoryGridWidget|UI")
+	FLinearColor ValidDropBackgroundColor = FLinearColor(0.f, 1.f, 0.f, 0.25f);
+	
+	/** Item widget background color when drop location is not allowed */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="InventoryGridWidget|UI")
+	FLinearColor InvalidDropBackgroundColor = FLinearColor(1.f, 0.f, 0.f, 0.25f);
+	
 	/**
 	 * @brief Get the player's inventory component
 	 * 

@@ -87,11 +87,11 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 		// Draw drop location in green if there is room available and in red if there is no room available
 		if (IsRoomAvailableForPayload(Payload))
 		{
-			UWidgetBlueprintLibrary::DrawBox(PaintContext, DrawPosition, DrawSize, DefaultBrush, FLinearColor(0.f, 1.f, 0.f, 0.25f));
+			UWidgetBlueprintLibrary::DrawBox(PaintContext, DrawPosition, DrawSize, DefaultBrush, ValidDropBackgroundColor);
 		}
 		else
 		{
-			UWidgetBlueprintLibrary::DrawBox(PaintContext, DrawPosition, DrawSize, DefaultBrush, FLinearColor(1.f, 0.f, 0.f, 0.25f));
+			UWidgetBlueprintLibrary::DrawBox(PaintContext, DrawPosition, DrawSize, DefaultBrush, InvalidDropBackgroundColor);
 		}
 	}
 	
@@ -272,7 +272,7 @@ void UInventoryGridWidget::Refresh()
 	// Loop through inventory and create an item widget for every unique item
 	for (const TPair<UItemObject*, FTile>& Pair: InventoryComponent->GetAllItems())
 	{
-		const TSubclassOf<UUserWidget> ItemWidgetClass = Cast<ACustomPlayerController>(GetOwningPlayer())->ItemWidgetClass;
+		const TSubclassOf<UUserWidget> ItemWidgetClass = InventoryComponent->ItemWidgetClass;
 		const FName ItemWidgetName = FName(*FString::Printf(TEXT("ItemWidget_%p"), Pair.Key));
 
 		// Create and configure item widget

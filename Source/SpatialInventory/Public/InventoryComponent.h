@@ -7,6 +7,7 @@
 #include "InventoryComponent.generated.h"
 
 class UItemObject;
+class UUserWidget;
 struct FTile;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryChanged);
@@ -82,6 +83,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|Constants", meta=(ExposeOnSpawn="true"))
 	float TileSize = 25.f;
 
+	/** Widget class for items appearing in the inventory grid */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|UI")
+	TSubclassOf<UUserWidget> InventoryWidgetClass = nullptr;
+
+	/** Widget class for items appearing in the inventory grid */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory|UI")
+	TSubclassOf<UUserWidget> ItemWidgetClass = nullptr;
+
 	/** Delegate to be broadcast when an item is added, moved, or removed */
 	UPROPERTY(BlueprintAssignable, Category="Inventory|Events")
 	FOnInventoryChanged OnInventoryChanged;
@@ -91,7 +100,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Array containing all items in the inventory */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Inventory")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category="Inventory")
 	TArray<UItemObject*> Items;
 
 	/** Flag indicating that the inventory has changed and the UI must be updated */

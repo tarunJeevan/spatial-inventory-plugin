@@ -18,32 +18,40 @@ UCLASS()
 class UI_API UItemWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
-	/** The size of the item widget based on the item's dimensions */
-	FVector2D Size;
 	
 protected:
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ItemWidget|UI")
 	TObjectPtr<UCanvasPanel> CanvasPanel;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ItemWidget|UI")
 	TObjectPtr<USizeBox> BackgroundSizeBox;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ItemWidget|UI")
 	TObjectPtr<UBorder> BackgroundBorder;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="ItemWidget|UI")
 	TObjectPtr<UImage> ItemImage;
 
 	/** Tile size set in the inventory component */
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="ItemWidget|Private")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="ItemWidget|Private")
 	float TileSize;
 
 	/** ItemObject representing the item that was added to the inventory */
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="ItemWidget|Private")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta=(ExposeOnSpawn=true), Category="ItemWidget|Private")
 	TObjectPtr<UItemObject> ItemObject;
 
+	/** The size of the item widget based on the item's dimensions */
+	FVector2D Size;
+
 public:
+	/** Default item widget background color */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ItemWidget|UI")
+	FLinearColor DefaultBackgroundColor = FLinearColor(0.f, 0.f, 0.f, 0.5f);
+	
+	/** Item widget background color when mouse is hovering over it */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ItemWidget|UI")
+	FLinearColor HoverBackgroundColor = FLinearColor(0.5f, 0.5f, 0.5f, 0.2f);
+	
 	/** Delegate to be broadcast when the item is dropped */
 	UPROPERTY(BlueprintAssignable, Category="ItemWidget|Delegates")
 	FOnRemoved OnRemoved;
