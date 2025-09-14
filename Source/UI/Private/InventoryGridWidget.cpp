@@ -183,6 +183,7 @@ FReply UInventoryGridWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry,
 {
 	Super::NativeOnPreviewKeyDown(InGeometry, InKeyEvent);
 
+	// Only handle event if key being pressed is the rotation key
 	if (InKeyEvent.GetKey() == EKeys::R)
 	{
 		UItemObject* Payload = GetPayload(UWidgetBlueprintLibrary::GetDragDroppingContent());
@@ -193,8 +194,10 @@ FReply UInventoryGridWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry,
 			// Refresh drag visual
 			Cast<UItemWidget>(UWidgetBlueprintLibrary::GetDragDroppingContent()->DefaultDragVisual)->Refresh();
 		}
+		return FReply::Handled();
 	}
-	return FReply::Handled();
+	// Pass input through to the game by default
+	return FReply::Unhandled();
 }
 #pragma endregion
 
