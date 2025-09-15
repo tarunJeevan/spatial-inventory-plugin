@@ -31,8 +31,7 @@ public:
 	 * @return				True if the item can be added to the inventory, false otherwise
 	 */
 	bool TryAddItem(UItemObject* ItemObject);
-
-
+	
 	/**
 	 * @brief Get all unique items in inventory with their top-left tile positions
 	 * 

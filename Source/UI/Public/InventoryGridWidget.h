@@ -27,6 +27,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="InventoryGridWidget|UI")
 	FLinearColor InvalidDropBackgroundColor = FLinearColor(1.f, 0.f, 0.f, 0.25f);
 	
+	/** Inventory grid line color */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="InventoryGridWidget|UI")
+	FLinearColor GridLineColor = FLinearColor(0.5f, 0.5f, 0.5f, 0.5f);
+
+	/**
+	 * @brief Rotate the item currently being dragged
+	 */
+	UFUNCTION(BlueprintCallable, Category = "InventoryGridWidget|UI")
+	void RotateDraggedItem() const;
+	
 	/**
 	 * @brief Get the player's inventory component
 	 * 
@@ -134,7 +144,4 @@ protected:
 	// Override function to handle drop operations in the inventory grid 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 		UDragDropOperation* InOperation) override;
-
-	// Override function to handle item widget rotation in the inventory grid
-	virtual FReply NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 };

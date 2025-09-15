@@ -23,7 +23,6 @@ public class UI : ModuleRules
                 "UMG",
                 "InputCore",
                 "SpatialInventory", 
-                "PluginTestBed"
             }
         );
     }

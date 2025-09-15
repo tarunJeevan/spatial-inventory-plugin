@@ -2,7 +2,6 @@
 
 #include "InventoryGridWidget.h"
 
-#include "CustomPlayerController.h"
 #include "InventoryUtils.h"
 #include "ItemObject.h"
 #include "ItemWidget.h"
@@ -13,6 +12,21 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Slate/SlateBrushAsset.h"
+
+void UInventoryGridWidget::RotateDraggedItem() const
+{
+	UItemObject* Payload = GetPayload(UWidgetBlueprintLibrary::GetDragDroppingContent());
+	if (IsValid(Payload))
+	{
+		// Rotate item dimensions
+		Payload->Rotate();
+		// Refresh drag visual
+		if (UItemWidget* ItemWidget = Cast<UItemWidget>(UWidgetBlueprintLibrary::GetDragDroppingContent()->DefaultDragVisual))
+		{
+			ItemWidget->Refresh();
+		}
+	}
+}
 
 #pragma region NativeOverrides
 void UInventoryGridWidget::NativeOnInitialized()
@@ -63,7 +77,6 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 
 	// Create the necessary parameters
 	FPaintContext PaintContext(AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
-	constexpr FLinearColor CustomColor(0.5f, 0.5f, 0.5f, 0.5f);
 	const FVector2D TopLeftCorner = GridBorder->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0.f, 0.f));
 
 	// Draw lines
@@ -72,7 +85,7 @@ int32 UInventoryGridWidget::NativePaint(const FPaintArgs& Args, const FGeometry&
 		
 		const FVector2D PositionA = Line.Start + TopLeftCorner;
 		const FVector2D PositionB = Line.End + TopLeftCorner;
-		UWidgetBlueprintLibrary::DrawLine(PaintContext, PositionA, PositionB, CustomColor); 
+		UWidgetBlueprintLibrary::DrawLine(PaintContext, PositionA, PositionB, GridLineColor); 
 	}
 
 	// Draw item drop location
@@ -178,27 +191,6 @@ bool UInventoryGridWidget::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	return true;
 }
 #pragma endregion
-
-FReply UInventoryGridWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
-{
-	Super::NativeOnPreviewKeyDown(InGeometry, InKeyEvent);
-
-	// Only handle event if key being pressed is the rotation key
-	if (InKeyEvent.GetKey() == EKeys::R)
-	{
-		UItemObject* Payload = GetPayload(UWidgetBlueprintLibrary::GetDragDroppingContent());
-		if (IsValid(Payload))
-		{
-			// Rotate item dimensions
-			Payload->Rotate();
-			// Refresh drag visual
-			Cast<UItemWidget>(UWidgetBlueprintLibrary::GetDragDroppingContent()->DefaultDragVisual)->Refresh();
-		}
-		return FReply::Handled();
-	}
-	// Pass input through to the game by default
-	return FReply::Unhandled();
-}
 #pragma endregion
 
 #pragma region Private

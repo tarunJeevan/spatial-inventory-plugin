@@ -11,25 +11,31 @@ class UBorder;
 class UCanvasPanel;
 class UInventoryGridWidget;
 
-/**
- * 
- */
 UCLASS()
 class UI_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	/**
+	 * @brief Get a reference to the inventory grid
+	 * 
+	 * @return Reference to this inventory widget's grid widget
+	 */
+	UFUNCTION(BlueprintCallable, Category = "InventoryWidget")
+	UInventoryGridWidget* GetInventoryGridWidget() const { return InventoryGrid; }
+
 protected:
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="InventoryWidget|UI")
 	TObjectPtr<UCanvasPanel> CanvasPanel;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="InventoryWidget|UI")
 	TObjectPtr<UBorder> BackgroundBorder;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="InventoryWidget|UI")
 	TObjectPtr<UBackgroundBlur> Blur;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="UI")
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget), Category="InventoryWidget|UI")
 	TObjectPtr<UInventoryGridWidget> InventoryGrid;
 
 	// Override function to initialize the widget (Called only once)
